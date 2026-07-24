@@ -68,7 +68,7 @@ export default function Navbar() {
             {user ? (
               <>
                 <motion.div whileHover={shouldReduceMotion ? undefined : { scale: 1.04 }} whileTap={shouldReduceMotion ? undefined : { scale: 0.95 }}>
-                  <NavLink to="/profile" className="button button-secondary" onClick={closeMenu}>Profile</NavLink>
+                  <NavLink to={user?.role === 'seller' || user?.role === 'agent' ? '/dashboard' : '/profile'} className="button button-secondary" onClick={closeMenu}>Profile</NavLink>
                 </motion.div>
                 <motion.button type="button" className="button button-secondary" onClick={() => dispatch(logout())} whileHover={shouldReduceMotion ? undefined : { scale: 1.04 }} whileTap={shouldReduceMotion ? undefined : { scale: 0.95 }}>
                   Sign Out
@@ -120,7 +120,7 @@ export default function Navbar() {
               <div className="mobile-auth-actions" style={{ marginTop: 'auto', paddingTop: '1.5rem', display: 'flex', flexDirection: 'column', gap: '0.75rem', borderTop: '1px solid #e2e8f0' }}>
                 {user ? (
                   <>
-                    <NavLink to="/profile" className="button button-secondary" style={{ width: '100%', justifyContent: 'center' }} onClick={closeMenu}>Profile</NavLink>
+                    <NavLink to={user?.role === 'seller' || user?.role === 'agent' ? '/dashboard' : '/profile'} className="button button-secondary" style={{ width: '100%', justifyContent: 'center' }} onClick={closeMenu}>Profile</NavLink>
                     <button type="button" className="button button-secondary" style={{ width: '100%', justifyContent: 'center' }} onClick={() => { dispatch(logout()); closeMenu(); }}>Sign Out</button>
                   </>
                 ) : (

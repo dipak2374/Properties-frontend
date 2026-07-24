@@ -30,6 +30,10 @@ const Dashboard = lazy(() => import('../pages/Dashboard/Dashboard'));
 const AddProperty = lazy(() => import('../pages/Dashboard/AddProperty'));
 const MyProperties = lazy(() => import('../pages/Dashboard/MyProperties'));
 const DashboardAppointment = lazy(() => import('../pages/Dashboard/Appointment'));
+const DashboardSettings = lazy(() => import('../pages/Dashboard/Settings'));
+const DashboardEarnings = lazy(() => import('../pages/Dashboard/Earnings'));
+const DashboardReviews = lazy(() => import('../pages/Dashboard/Reviews'));
+const DashboardAnalytics = lazy(() => import('../pages/Dashboard/Analytics'));
 const DashboardLayout = lazy(() => import('../layouts/DashboardLayout'));
 const Admin = lazy(() => import('../pages/Admin/Admin'));
 const NotFound = lazy(() => import('../pages/NotFound/NotFound'));
@@ -108,6 +112,10 @@ function AppShell() {
               <Route path="pending" element={<MyProperties defaultFilter="pending" />} />
               <Route path="sold" element={<MyProperties defaultFilter="sold" />} />
               <Route path="appointment" element={<DashboardAppointment />} />
+              <Route path="settings" element={<DashboardSettings />} />
+              <Route path="earnings" element={<DashboardEarnings />} />
+              <Route path="reviews" element={<DashboardReviews />} />
+              <Route path="analytics" element={<DashboardAnalytics />} />
             </Route>
 
             <Route

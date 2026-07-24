@@ -94,7 +94,7 @@ export default function DashboardLayout() {
               ☰
             </button>
             <div className="topnav-search">
-              <label htmlFor="dashboard-topnav-search" className="sr-only">Search listings</label>
+              <label htmlFor="dashboard-topnav-search" style={{ display: 'none' }}>Search listings</label>
               <input
                 id="dashboard-topnav-search"
                 type="text"
