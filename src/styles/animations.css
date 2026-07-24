@@ -1,0 +1,84 @@
+:root {
+  color-scheme: light;
+}
+
+body {
+  overflow-x: hidden;
+}
+
+.loading-shell {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  color: #4f46e5;
+  font-weight: 700;
+}
+
+.loading-spinner {
+  width: 28px;
+  height: 28px;
+  border-radius: 999px;
+  border: 3px solid rgba(79, 70, 229, 0.15);
+  border-top-color: #4f46e5;
+}
+
+.skeleton-block {
+  position: relative;
+  overflow: hidden;
+  border-radius: 16px;
+  background: linear-gradient(90deg, rgba(226, 232, 240, 0.6), rgba(241, 245, 249, 0.95), rgba(226, 232, 240, 0.6));
+  background-size: 200% 100%;
+}
+
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: #f8fbff;
+}
+
+.site-nav a {
+  position: relative;
+  transition: color 0.2s ease;
+}
+
+.site-nav a:hover,
+.site-nav a.active {
+  color: #111827;
+}
+
+.hero-preview {
+  position: relative;
+  isolation: isolate;
+}
+
+.hero-preview::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(15, 23, 42, 0.05), rgba(15, 23, 42, 0.32));
+  z-index: -1;
+}
+
+.auth-card,
+.auth-note,
+.login-hero,
+.contact-form-panel,
+.contact-details-panel,
+.contact-card,
+.page-content,
+.admin-card,
+.admin-panel,
+.properties-stat,
+.properties-table-row,
+.category-card,
+.feature-card,
+.property-card {
+  box-shadow: 0 22px 45px rgba(15, 23, 42, 0.06);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skeleton-block {
+    animation: none !important;
+  }
+}

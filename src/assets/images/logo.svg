@@ -1,0 +1,24 @@
+<svg width="160" height="40" viewBox="0 0 160 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="blueGradient" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#102a52" />
+      <stop offset="100%" stop-color="#1a4ecc" />
+    </linearGradient>
+    <linearGradient id="greenGradient" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#1f8f41" />
+      <stop offset="100%" stop-color="#3ea94f" />
+    </linearGradient>
+  </defs>
+  <g transform="translate(4 4)">
+    <path d="M7.7 18.2L19.6 2.1h8.8v20.5H7.7z" fill="url(#blueGradient)" />
+    <path d="M19.6 2.1L32.6 11.5V23.6H19.6V2.1Z" fill="#0f2147" />
+    <path d="M31.8 11.5L40.9 6.1V24.8H31.8V11.5Z" fill="url(#greenGradient)" />
+    <path d="M0 23.6H33.5L33.5 30.6H0V23.6Z" fill="url(#blueGradient)" />
+    <path d="M4.8 18H10.8V23.6H4.8V18Z" fill="#ffffff" />
+    <path d="M13.4 18H19.4V23.6H13.4V18Z" fill="#ffffff" />
+    <path d="M22.1 18H28.1V23.6H22.1V18Z" fill="#ffffff" />
+    <path d="M17 12.1H25V17.7H17V12.1Z" fill="#ffffff" opacity="0.78" />
+  </g>
+  <text x="52" y="18" fill="#102a52" font-family="Inter, Arial, sans-serif" font-size="16" font-weight="700">Property</text>
+  <text x="112" y="18" fill="#1f8f41" font-family="Inter, Arial, sans-serif" font-size="16" font-weight="700">Hub</text>
+</svg>
