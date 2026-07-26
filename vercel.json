@@ -4,5 +4,15 @@
       "source": "/((?!assets/|images/|favicon.ico|.*\\..*).*)",
       "destination": "/index.html"
     }
-  ]
+  ],
+  "env": {
+    "VITE_API_URL": "https://properties-backend-155z.onrender.com",
+    "VITE_API_BASE_URL": "https://properties-backend-155z.onrender.com/api"
+  },
+  "build": {
+    "env": {
+      "VITE_API_URL": "https://properties-backend-155z.onrender.com",
+      "VITE_API_BASE_URL": "https://properties-backend-155z.onrender.com/api"
+    }
+  }
 }

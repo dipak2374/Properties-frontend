@@ -45,6 +45,7 @@ const Sitemap = lazy(() => import('../pages/Sitemap/Sitemap'));
 const Pricing = lazy(() => import('../pages/Pricing/Pricing'));
 const Privacy = lazy(() => import('../pages/Privacy/Privacy'));
 const Terms = lazy(() => import('../pages/Terms/Terms'));
+const AuthCallback = lazy(() => import('../pages/AuthCallback/AuthCallback'));
 
 function RouteTransition({ children }) {
   return (
@@ -94,6 +95,7 @@ function AppShell() {
               <Route path="pricing" element={<RouteTransition><Pricing /></RouteTransition>} />
               <Route path="privacy" element={<RouteTransition><Privacy /></RouteTransition>} />
               <Route path="terms" element={<RouteTransition><Terms /></RouteTransition>} />
+              <Route path="auth/callback" element={<RouteTransition><AuthCallback /></RouteTransition>} />
               <Route path="*" element={<RouteTransition><NotFound /></RouteTransition>} />
             </Route>
 

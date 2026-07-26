@@ -8,14 +8,12 @@ import api from './api';
 export const signIn = async (credentials) => {
   try {
     const response = await api.post('/auth/login', credentials);
-    return response.data; // { user, token, message }
+    return response.data;
   } catch (error) {
-    // Re-throw the server's error message so the UI shows it correctly.
-    // e.g. "Invalid credentials." when password is wrong.
     const message =
       error?.response?.data?.message ||
       (error?.code === 'ERR_NETWORK'
-        ? 'Cannot connect to server. Make sure the backend is running on port 5005.'
+        ? 'Unable to connect to the server. Please check your internet connection and try again.'
         : 'Login failed. Please try again.');
     throw new Error(message);
   }
@@ -32,12 +30,12 @@ export const signUp = async (payload) => {
       ? { headers: { 'Content-Type': 'multipart/form-data' } }
       : undefined;
     const response = await api.post('/auth/register', payload, config);
-    return response.data; // { user, token, message }
+    return response.data;
   } catch (error) {
     const message =
       error?.response?.data?.message ||
       (error?.code === 'ERR_NETWORK'
-        ? 'Cannot connect to server. Make sure the backend is running on port 5005.'
+        ? 'Unable to connect to the server. Please check your internet connection and try again.'
         : 'Registration failed. Please try again.');
     throw new Error(message);
   }

@@ -85,53 +85,14 @@ export default function Register() {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    const getPopupBlockedMessage = (provider) => {
-      if (provider === 'apple') {
-        return 'Popup blocked. Please allow popups and try Apple Sign In again.';
-      }
-      if (provider === 'facebook') {
-        return 'Popup blocked. Please allow popups and try Facebook sign in again.';
-      }
-      return 'Popup blocked. Please allow popups and try again.';
-    };
-
-    const handleAuthMessage = (event) => {
-      const apiOrigin = (import.meta.env.VITE_API_BASE_URL || 'http://localhost:5005/api').replace(/\/api\/?$/, '');
-      const isAllowedOrigin =
-        event.origin === apiOrigin ||
-        event.origin === 'http://localhost:5005' ||
-        event.origin === 'http://localhost:5000' ||
-        event.origin.endsWith('.onrender.com');
-
-      if (!isAllowedOrigin) return;
-
-      const type = event.data?.type;
-      if (!type || typeof type !== 'string' || !type.startsWith('propertyhub-') || !type.endsWith('-auth')) {
-        return;
-      }
-
-      const provider = type.split('-')[1] || 'provider';
-      if (event.data?.error) {
-        const message = provider === 'apple'
-          ? `Apple Sign In failed. ${event.data.error}`
-          : event.data.error;
-        setError(message);
-        setLoading(false);
-        return;
-      }
-
-      const { payload } = event.data;
-      if (payload?.user && payload?.token) {
-        dispatch(setAuth({ user: payload.user, token: payload.token }));
-        const targetPath = (payload.user?.role === 'seller' || payload.user?.role === 'agent') ? '/dashboard' : '/';
-        navigate(targetPath);
-        setLoading(false);
-      }
-    };
-
-    window.addEventListener('message', handleAuthMessage);
-    return () => window.removeEventListener('message', handleAuthMessage);
-  }, [dispatch, navigate]);
+    // Handle error param from redirect-based OAuth callback
+    const params = new URLSearchParams(window.location.search);
+    const oauthError = params.get('error');
+    if (oauthError) {
+      setError(decodeURIComponent(oauthError));
+      window.history.replaceState({}, '', window.location.pathname);
+    }
+  }, []);
 
   useEffect(() => {
     return () => {
@@ -231,11 +192,9 @@ export default function Register() {
 
     if (provider === 'google') {
       setLoading(true);
-      const popup = window.open(`${apiBaseUrl}/auth/google/login`, 'propertyhub-google', 'width=560,height=700');
-      if (!popup) {
-        setError('Popup blocked. Please allow popups and try again.');
-        setLoading(false);
-      }
+      // Redirect-based OAuth: navigate directly to backend Google auth URL.
+      // Backend redirects to /auth/callback with token on success.
+      window.location.href = `${apiBaseUrl}/auth/google/login`;
       return;
     }
 
@@ -245,11 +204,7 @@ export default function Register() {
         return;
       }
       setLoading(true);
-      const popup = window.open(`${apiBaseUrl}/auth/facebook/login`, 'propertyhub-facebook', 'width=560,height=700');
-      if (!popup) {
-        setError('Popup blocked. Please allow popups and try again.');
-        setLoading(false);
-      }
+      window.location.href = `${apiBaseUrl}/auth/facebook/login`;
       return;
     }
 
@@ -259,11 +214,7 @@ export default function Register() {
         return;
       }
       setLoading(true);
-      const popup = window.open(`${apiBaseUrl}/auth/apple/login`, 'propertyhub-apple', 'width=560,height=700');
-      if (!popup) {
-        setError(getPopupBlockedMessage(provider));
-        setLoading(false);
-      }
+      window.location.href = `${apiBaseUrl}/auth/apple/login`;
       return;
     }
 
