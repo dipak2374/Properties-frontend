@@ -3,13 +3,16 @@ import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import AgentCard from '../AgentCard/AgentCard';
 import { fetchAgents, resolveUserAssetUrl } from '../../services/userService';
+import { defaultAgents } from '../../data/agentsData';
 
-const fallbackAgents = [
-  { id: 'mock-1', name: 'David Smith', role: 'Senior Agent', image: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=200&q=80' },
-  { id: 'mock-2', name: 'Jessica Alba', role: 'Property Consultant', image: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=200&q=80' },
-  { id: 'mock-3', name: 'Michael Jordan', role: 'Real Estate Broker', image: 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=crop&w=200&q=80' },
-  { id: 'mock-4', name: 'Emily Blunt', role: 'Listing Specialist', image: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&w=200&q=80' },
-];
+const fallbackAgents = defaultAgents.slice(0, 4).map((a) => ({
+  id: a.id,
+  name: a.name,
+  role: a.title,
+  image: a.image,
+  phone: a.phone,
+  email: a.email,
+}));
 
 export default function FeaturedAgents() {
   const [agents, setAgents] = useState([]);

@@ -158,7 +158,34 @@ export default function AddProperty() {
     }));
   };
 
+  const validateStep = (step) => {
+    if (step === 0) {
+      if (!formData.title || formData.title.trim().length < 5) {
+        showToast('Please enter a property title (min 5 characters).', 'error');
+        return false;
+      }
+      if (!formData.description || formData.description.trim().length < 10) {
+        showToast('Please enter a property description (min 10 characters).', 'error');
+        return false;
+      }
+    }
+    if (step === 1) {
+      if (!formData.city || !formData.city.trim()) {
+        showToast('Please enter the city location.', 'error');
+        return false;
+      }
+    }
+    if (step === 5) {
+      if (!formData.price || Number(formData.price) <= 0) {
+        showToast('Please enter a valid listing price.', 'error');
+        return false;
+      }
+    }
+    return true;
+  };
+
   const handleNext = () => {
+    if (!validateStep(currentStep)) return;
     if (currentStep < STEPS.length - 1) {
       setCurrentStep((prev) => prev + 1);
     }

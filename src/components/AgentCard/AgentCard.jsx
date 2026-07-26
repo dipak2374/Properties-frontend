@@ -1,7 +1,10 @@
 import { motion, useReducedMotion } from 'framer-motion';
+import { Link } from 'react-router-dom';
 
 export default function AgentCard({ id, name, title, properties, image, phone, email }) {
   const shouldReduceMotion = useReducedMotion();
+
+  const profilePath = id ? `/agent/${id}` : '/agents';
 
   return (
     <motion.div
@@ -19,7 +22,7 @@ export default function AgentCard({ id, name, title, properties, image, phone, e
           whileHover={shouldReduceMotion ? undefined : { scale: 1.05 }} 
           transition={{ duration: 0.3 }} 
         />
-        <div className="agent-properties-badge">{properties}</div>
+        {properties ? <div className="agent-properties-badge">{properties}</div> : null}
       </div>
       
       <div className="agent-card-info">
@@ -41,15 +44,9 @@ export default function AgentCard({ id, name, title, properties, image, phone, e
       </div>
       
       <div className="agent-card-actions">
-        {email ? (
-          <a className="btn btn-primary btn-full" href={`mailto:${email}?subject=Inquiry%20about%20property`} rel="noopener noreferrer">
-            Contact Agent
-          </a>
-        ) : (
-          <a className="btn btn-secondary btn-full" href={`/agent/${id}`} rel="noopener noreferrer">
-            View Profile
-          </a>
-        )}
+        <Link className="btn btn-primary btn-full" to={profilePath}>
+          View Profile
+        </Link>
       </div>
     </motion.div>
   );

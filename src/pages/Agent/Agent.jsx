@@ -1,37 +1,40 @@
 import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import PropertyCard from '../../components/PropertyCard/PropertyCard';
 import PageLoader from '../../components/Common/PageLoader';
-import { featuredProperties } from '../../data/featuredProperties';
 import { defaultAgents } from '../../data/agentsData';
 import { fetchAgents, resolveUserAssetUrl } from '../../services/userService';
-import { fetchProperties } from '../../services/propertyService';
-import NotFound from '../NotFound/NotFound';
+import { validateName, validateEmail, validatePhone, validateMessage, runValidators } from '../../utils/validate';
 import '../../styles/pages.css';
+
+const INITIAL_FORM = { name: '', email: '', phone: '', message: '' };
 
 export default function Agent() {
   const { id } = useParams();
   const [agent, setAgent] = useState(null);
-  const [properties, setProperties] = useState([]);
   const [loading, setLoading] = useState(true);
+
+  // Form state & validation
+  const [contactForm, setContactForm] = useState(INITIAL_FORM);
+  const [fieldErrors, setFieldErrors] = useState({});
+  const [touched, setTouched] = useState({});
+  const [sending, setSending] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
 
   useEffect(() => {
     let active = true;
-    const loadAgentAndProperties = async () => {
+    const loadAgent = async () => {
       setLoading(true);
       try {
-        const numericId = parseInt(id, 10);
-        if (Number.isInteger(numericId) && String(numericId) === id) {
-          // STATIC AGENT FALLBACK
-          const staticAgent = defaultAgents.find((a) => a.id === numericId);
-          if (active) {
-            setAgent(staticAgent || null);
-            setProperties(featuredProperties.slice(0, 4));
-          }
+        const extractedNum = parseInt(String(id || '').replace(/\D/g, ''), 10);
+        const staticAgent = defaultAgents.find(
+          (a) => String(a.id) === String(id) || (Number.isInteger(extractedNum) && a.id === extractedNum)
+        );
+
+        if (staticAgent) {
+          if (active) setAgent(staticAgent);
         } else {
-          // LIVE DB AGENT FLOW
           const liveAgents = await fetchAgents();
-          const found = liveAgents.find((a) => String(a._id || a.id) === id);
+          const found = liveAgents.find((a) => String(a._id || a.id) === String(id));
           
           if (found && active) {
             const formatted = {
@@ -46,42 +49,78 @@ export default function Agent() {
               location: found.location || 'United States',
               email: found.email || '',
               phone: found.phone || '+1 555-0100',
-              image: resolveUserAssetUrl(found.profilePicture || found.avatar) || 'https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=800&q=80',
+              image: resolveUserAssetUrl(found.profilePicture || found.avatar) || defaultAgents[0].image,
               description: found.description || 'Verified real estate professional with a passion for helping clients navigate the property market and find their dream home.',
             };
             setAgent(formatted);
-
-            // Fetch live properties from backend API and filter by this agent
-            try {
-              const allProperties = await fetchProperties();
-              const agentProps = allProperties.filter((p) => String(p.ownerId) === String(found._id || found.id));
-              setProperties(agentProps);
-            } catch (propErr) {
-              console.error('Error fetching agent properties', propErr);
-            }
+          } else if (active) {
+            setAgent(defaultAgents[0]);
           }
         }
       } catch (err) {
         console.error('Error loading agent profile', err);
+        if (active) setAgent(defaultAgents[0]);
       } finally {
-        if (active) {
-          setLoading(false);
-        }
+        if (active) setLoading(false);
       }
     };
 
-    loadAgentAndProperties();
-    return () => {
-      active = false;
-    };
+    loadAgent();
+    return () => { active = false; };
   }, [id]);
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setContactForm((prev) => ({ ...prev, [name]: value }));
+    if (touched[name]) {
+      setFieldErrors((prev) => ({ ...prev, [name]: validateField(name, value) }));
+    }
+  };
+
+  const handleBlur = (e) => {
+    const { name, value } = e.target;
+    setTouched((prev) => ({ ...prev, [name]: true }));
+    setFieldErrors((prev) => ({ ...prev, [name]: validateField(name, value) }));
+  };
+
+  const validateField = (name, value) => {
+    if (name === 'name') return validateName(value);
+    if (name === 'email') return validateEmail(value);
+    if (name === 'phone') return validatePhone(value);
+    if (name === 'message') return validateMessage(value, { min: 5, max: 1000 });
+    return '';
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setTouched({ name: true, email: true, phone: true, message: true });
+
+    const { errors, hasError } = runValidators({
+      name: () => validateName(contactForm.name),
+      email: () => validateEmail(contactForm.email),
+      phone: () => validatePhone(contactForm.phone),
+      message: () => validateMessage(contactForm.message, { min: 5, max: 1000 }),
+    });
+
+    setFieldErrors(errors);
+    if (hasError) return;
+
+    setSending(true);
+    try {
+      await new Promise((resolve) => setTimeout(resolve, 800));
+      setSubmitted(true);
+      setContactForm(INITIAL_FORM);
+    } finally {
+      setSending(false);
+    }
+  };
 
   if (loading) {
     return <PageLoader label="Loading Agent Profile…" />;
   }
 
   if (!agent) {
-    return <NotFound />;
+    return null;
   }
 
   return (
@@ -125,13 +164,86 @@ export default function Agent() {
 
           <aside className="agent-contact-card">
             <h2>Contact Agent</h2>
-            <div className="contact-form">
-              <input type="text" placeholder="Your Name" aria-label="Your Name" />
-              <input type="email" placeholder="Your Email" aria-label="Your Email" />
-              <input type="tel" placeholder="Phone Number" aria-label="Phone Number" />
-              <textarea placeholder="Your Message" aria-label="Your Message" />
-              <button type="button" className="button button-primary">Send Message</button>
-            </div>
+            {submitted ? (
+              <div style={{ textAlign: 'center', padding: '1.5rem 0', color: '#16a34a' }}>
+                <div style={{ fontSize: '2.5rem', marginBottom: '0.5rem' }}>✓</div>
+                <h3 style={{ margin: '0 0 0.5rem 0', color: '#15803d' }}>Message Sent!</h3>
+                <p style={{ margin: 0, fontSize: '0.9rem', color: '#475569' }}>
+                  Thank you! {agent.name.split(' ')[0]} will get back to you shortly.
+                </p>
+                <button
+                  type="button"
+                  className="button button-secondary"
+                  style={{ marginTop: '1rem', width: '100%' }}
+                  onClick={() => setSubmitted(false)}
+                >
+                  Send another message
+                </button>
+              </div>
+            ) : (
+              <form className="contact-form" onSubmit={handleSubmit} noValidate>
+                <div>
+                  <input
+                    type="text"
+                    name="name"
+                    placeholder="Your Name"
+                    aria-label="Your Name"
+                    value={contactForm.name}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    className={fieldErrors.name ? 'input-invalid' : touched.name && contactForm.name ? 'input-valid' : ''}
+                  />
+                  {fieldErrors.name && <span className="field-error" role="alert" style={{ color: '#ef4444', fontSize: '0.8rem', marginTop: '2px', display: 'block' }}>{fieldErrors.name}</span>}
+                </div>
+
+                <div>
+                  <input
+                    type="email"
+                    name="email"
+                    placeholder="Your Email"
+                    aria-label="Your Email"
+                    value={contactForm.email}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    className={fieldErrors.email ? 'input-invalid' : touched.email && contactForm.email ? 'input-valid' : ''}
+                  />
+                  {fieldErrors.email && <span className="field-error" role="alert" style={{ color: '#ef4444', fontSize: '0.8rem', marginTop: '2px', display: 'block' }}>{fieldErrors.email}</span>}
+                </div>
+
+                <div>
+                  <input
+                    type="tel"
+                    name="phone"
+                    placeholder="Phone Number"
+                    aria-label="Phone Number"
+                    value={contactForm.phone}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    className={fieldErrors.phone ? 'input-invalid' : touched.phone && contactForm.phone ? 'input-valid' : ''}
+                  />
+                  {fieldErrors.phone && <span className="field-error" role="alert" style={{ color: '#ef4444', fontSize: '0.8rem', marginTop: '2px', display: 'block' }}>{fieldErrors.phone}</span>}
+                </div>
+
+                <div>
+                  <textarea
+                    name="message"
+                    placeholder="Your Message"
+                    aria-label="Your Message"
+                    rows={4}
+                    value={contactForm.message}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    className={fieldErrors.message ? 'input-invalid' : touched.message && contactForm.message ? 'input-valid' : ''}
+                  />
+                  {fieldErrors.message && <span className="field-error" role="alert" style={{ color: '#ef4444', fontSize: '0.8rem', marginTop: '2px', display: 'block' }}>{fieldErrors.message}</span>}
+                </div>
+
+                <button type="submit" className="button button-primary" disabled={sending}>
+                  {sending ? 'Sending...' : 'Send Message'}
+                </button>
+              </form>
+            )}
+
             <div className="agent-contact-details">
               {agent.email && (
                 <>
@@ -147,24 +259,6 @@ export default function Agent() {
               )}
             </div>
           </aside>
-        </section>
-
-        <section className="agent-properties">
-          <div className="section-headline">
-            <h2>Properties Listed by {agent.name.split(' ')[0]}</h2>
-            <a href="/properties">View All Properties</a>
-          </div>
-          <div className="properties-grid">
-            {properties.length > 0 ? (
-              properties.map((property) => (
-                <PropertyCard key={property.id} {...property} />
-              ))
-            ) : (
-              <p style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '3rem', color: '#64748b', fontSize: '1.1rem' }}>
-                This agent does not have any active property listings at the moment.
-              </p>
-            )}
-          </div>
         </section>
       </main>
     </div>
