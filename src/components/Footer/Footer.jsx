@@ -36,11 +36,11 @@ export default function Footer() {
 
         <div className="footer-column">
           <h4>Explore</h4>
-          <a href="/properties">Buy Properties</a>
-          <a href="/properties">Rent Properties</a>
-          <a href="/properties">Commercial</a>
-          <a href="/properties">New Projects</a>
-          <a href="/properties">Luxury Homes</a>
+          <Link to="/properties?listingType=For+Sale">Buy Properties</Link>
+          <Link to="/properties?listingType=For+Rent">Rent Properties</Link>
+          <Link to="/properties?type=Office">Commercial</Link>
+          <Link to="/properties">New Projects</Link>
+          <Link to="/properties">Luxury Homes</Link>
         </div>
 
         <div className="footer-column">

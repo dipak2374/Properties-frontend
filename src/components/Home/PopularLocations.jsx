@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion';
+import { Link } from 'react-router-dom';
 import { popularLocations } from '../../data/homeMockData';
 
 export default function PopularLocations() {
@@ -6,7 +7,7 @@ export default function PopularLocations() {
     <section className="locations-section">
       <div className="section-headline">
         <h2>Popular Locations</h2>
-        <a href="/properties">Explore More Cities</a>
+        <Link to="/properties">Explore More Cities</Link>
       </div>
       <div className="locations-grid">
         {popularLocations.map((loc, i) => (
@@ -19,17 +20,19 @@ export default function PopularLocations() {
             transition={{ duration: 0.4, delay: i * 0.1 }}
             whileHover={{ y: -5, scale: 1.02 }}
           >
-            <img
-              src={loc.image}
-              alt={loc.city}
-              onError={(e) => {
-                e.currentTarget.style.display = 'none';
-              }}
-            />
-            <div className="location-overlay">
-              <h3>{loc.city}</h3>
-              <p>{loc.properties} Properties</p>
-            </div>
+            <Link to={`/properties?search=${encodeURIComponent(loc.city)}`} style={{ textDecoration: 'none', color: 'inherit', display: 'block', height: '100%' }}>
+              <img
+                src={loc.image}
+                alt={loc.city}
+                onError={(e) => {
+                  e.currentTarget.style.display = 'none';
+                }}
+              />
+              <div className="location-overlay">
+                <h3>{loc.city}</h3>
+                <p>{loc.properties} Properties</p>
+              </div>
+            </Link>
           </motion.div>
         ))}
       </div>

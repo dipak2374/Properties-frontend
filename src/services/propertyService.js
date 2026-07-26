@@ -19,6 +19,7 @@ export const normalizeProperty = (p) => ({
   agent: p.owner?.name || 'PropertyHub Agent',
   agentEmail: p.owner?.email || 'contact@propertyhub.com',
   agentPhone: p.owner?.phone || '+1 800-000-0000',
+  ownerId: p.owner?._id || p.owner,
   rating: p.rating ?? 4.5,
   type: p.propertyType || '',
   listingType: p.listingType || 'Sale',

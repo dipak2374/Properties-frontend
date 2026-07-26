@@ -3,7 +3,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import PropertyCard from '../../components/PropertyCard/PropertyCard';
 import { featuredProperties, getPropertyById } from '../../data/featuredProperties';
-import { fetchPropertyById } from '../../services/propertyService';
+import { fetchPropertyById, fetchProperties } from '../../services/propertyService';
 import { fetchPropertyReviews } from '../../services/reviewService';
 import PageLoader from '../../components/Common/PageLoader';
 import SEOHead from '../../components/Common/SEOHead';
@@ -32,6 +32,7 @@ export default function PropertyDetails() {
   const [shared, setShared] = useState(false);
   const [activeReviews, setActiveReviews] = useState([]);
   const [selectedImage, setSelectedImage] = useState(null);
+  const [similarProperties, setSimilarProperties] = useState([]);
 
   const allImages = useMemo(() => {
     const mainImg = property?.image;
@@ -73,7 +74,32 @@ export default function PropertyDetails() {
     return () => { cancelled = true; };
   }, [id]);
 
-  const similarProperties = useMemo(() => featuredProperties.filter((item) => item.id !== property?.id).slice(0, 3), [property]);
+  // Fetch similar properties from live API, fall back to static seed
+  useEffect(() => {
+    let cancelled = false;
+    const loadSimilar = async () => {
+      try {
+        const allProps = await fetchProperties();
+        const liveSimilar = allProps
+          .filter((p) => String(p.id) !== String(id))
+          .filter((p) => p.type === property?.type || p.location?.includes(property?.location?.split(',')[0]))
+          .slice(0, 3);
+        if (!cancelled) {
+          setSimilarProperties(
+            liveSimilar.length > 0
+              ? liveSimilar
+              : featuredProperties.filter((item) => String(item.id) !== String(id)).slice(0, 3)
+          );
+        }
+      } catch {
+        if (!cancelled) {
+          setSimilarProperties(featuredProperties.filter((item) => String(item.id) !== String(id)).slice(0, 3));
+        }
+      }
+    };
+    if (property) loadSimilar();
+    return () => { cancelled = true; };
+  }, [id, property]);
 
   if (loading) {
     return <PageLoader label="Loading property…" />;

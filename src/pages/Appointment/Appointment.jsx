@@ -5,6 +5,7 @@ import { useSelector } from 'react-redux';
 import '../../styles/pages.css';
 import { bookAppointment } from '../../services/appointmentService';
 import { fetchProperties } from '../../services/propertyService';
+import { featuredProperties as propertySeed } from '../../data/featuredProperties';
 import { showToast } from '../../utils/featureState';
 
 const getTodayString = () => new Date().toISOString().split('T')[0];
@@ -49,8 +50,8 @@ export default function Appointment() {
 
   useEffect(() => {
     fetchProperties()
-      .then((data) => setProperties(data))
-      .catch(() => setProperties([]))
+      .then((data) => setProperties(data.length > 0 ? data : propertySeed))
+      .catch(() => setProperties(propertySeed))
       .finally(() => setLoadingProps(false));
   }, []);
 

@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion';
+import { Link } from 'react-router-dom';
 import { blogPreviews } from '../../data/homeMockData';
 
 export default function BlogPreview() {
@@ -6,7 +7,7 @@ export default function BlogPreview() {
     <section className="blog-preview-section">
       <div className="section-headline">
         <h2>Latest from our Blog</h2>
-        <a href="/blog">Read More Articles</a>
+        <Link to="/blog">Read More Articles</Link>
       </div>
       <div className="blog-grid">
         {blogPreviews.map((post, i) => (
@@ -25,7 +26,7 @@ export default function BlogPreview() {
             <div className="blog-content">
               <p className="blog-date">{post.date}</p>
               <h3>{post.title}</h3>
-              <a href={`/blog/${post.id}`} className="read-more">Read Full Article →</a>
+              <Link to={`/blog/${post.id}`} className="read-more">Read Full Article →</Link>
             </div>
           </motion.article>
         ))}

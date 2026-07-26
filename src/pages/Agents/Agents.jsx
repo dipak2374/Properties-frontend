@@ -4,52 +4,8 @@ import Breadcrumbs from '../../components/Common/Breadcrumbs';
 import PageLoader from '../../components/Common/PageLoader';
 import { fetchAgents, resolveUserAssetUrl } from '../../services/userService';
 import SEOHead from '../../components/Common/SEOHead';
+import { defaultAgents } from '../../data/agentsData';
 import '../../styles/pages.css';
-
-const defaultAgents = [
-  {
-    id: 1,
-    name: 'Michael Johnson',
-    title: 'Senior Property Consultant',
-    properties: '24 Properties',
-    image: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=800&q=80',
-  },
-  {
-    id: 2,
-    name: 'Sarah Williams',
-    title: 'Luxury Home Specialist',
-    properties: '18 Properties',
-    image: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=800&q=80',
-  },
-  {
-    id: 3,
-    name: 'David Brown',
-    title: 'Commercial Property Agent',
-    properties: '32 Properties',
-    image: 'https://images.unsplash.com/photo-1488426862026-3ee34a7d66df?auto=format&fit=crop&w=800&q=80',
-  },
-  {
-    id: 4,
-    name: 'Alicia Williams',
-    title: 'Rental Property Expert',
-    properties: '20 Properties',
-    image: 'https://images.unsplash.com/photo-1544723795-3fb6469f5b39?auto=format&fit=crop&w=800&q=80',
-  },
-  {
-    id: 5,
-    name: 'Christopher Lee',
-    title: 'Investment Property Advisor',
-    properties: '16 Properties',
-    image: 'https://images.unsplash.com/photo-1552374196-c4e7ffc6e126?auto=format&fit=crop&w=800&q=80',
-  },
-  {
-    id: 6,
-    name: 'Olivia Martinez',
-    title: 'First-time Buyer Specialist',
-    properties: '12 Properties',
-    image: 'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=800&q=80',
-  },
-];
 
 export default function Agents() {
   const [agentsList, setAgentsList] = useState(defaultAgents);

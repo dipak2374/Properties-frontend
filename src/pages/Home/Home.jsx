@@ -240,7 +240,12 @@ export default function Home() {
                 <PropertyCard key={property.id} {...property} />
               ))
             ) : (
-              <p className="no-results">No properties found. Run the seed script to populate your database!</p>
+              <div className="empty-state-cta">
+                <div className="empty-state-icon">🏡</div>
+                <h3>No listings yet in this category</h3>
+                <p>We're adding new properties every day. Check back soon or explore all available listings.</p>
+                <Link to="/properties" className="button button-primary">Browse All Properties</Link>
+              </div>
             )}
           </div>
         </section>

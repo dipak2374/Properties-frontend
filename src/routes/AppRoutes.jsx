@@ -85,7 +85,7 @@ function AppShell() {
               <Route path="appointment" element={<RouteTransition><Appointment /></RouteTransition>} />
               <Route path="profile" element={<RouteTransition><Profile /></RouteTransition>} />
               <Route path="messages" element={<RouteTransition><Messages /></RouteTransition>} />
-              <Route path="agent" element={<RouteTransition><Agent /></RouteTransition>} />
+              <Route path="agent/:id" element={<RouteTransition><Agent /></RouteTransition>} />
               <Route path="blog" element={<RouteTransition><Blog /></RouteTransition>} />
               <Route path="blog/:slug" element={<RouteTransition><BlogDetails /></RouteTransition>} />
               <Route path="faqs" element={<RouteTransition><FAQ /></RouteTransition>} />

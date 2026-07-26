@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
+import { Link } from 'react-router-dom';
 import AgentCard from '../AgentCard/AgentCard';
 import { fetchAgents, resolveUserAssetUrl } from '../../services/userService';
 
@@ -47,7 +48,7 @@ export default function FeaturedAgents() {
     <section className="featured-agents-section">
       <div className="section-headline">
         <h2>Meet Our Top Agents</h2>
-        <a href="/agents">View All Agents</a>
+        <Link to="/agents">View All Agents</Link>
       </div>
       <div className="agents-grid">
         {agents.map((agent, i) => (

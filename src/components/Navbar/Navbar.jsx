@@ -32,10 +32,12 @@ export default function Navbar() {
         transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
       >
         <motion.div className="brand logo-brand" whileHover={shouldReduceMotion ? undefined : { scale: 1.02 }} whileTap={shouldReduceMotion ? undefined : { scale: 0.98 }}>
-          <img src="/images/b-logo.png" alt="PropertyHub logo" className="brand-logo" />
-          <div className="brand-copy">
-            <img src="/images/br-logo.png" alt="PropertyHub logo" className="brands-logo" />
-          </div>
+          <NavLink to="/" onClick={closeMenu} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', textDecoration: 'none' }}>
+            <img src="/images/b-logo.png" alt="PropertyHub logo" className="brand-logo" />
+            <div className="brand-copy">
+              <img src="/images/br-logo.png" alt="PropertyHub logo" className="brands-logo" />
+            </div>
+          </NavLink>
         </motion.div>
 
         <nav className="site-nav desktop-nav" aria-label="Primary navigation">
