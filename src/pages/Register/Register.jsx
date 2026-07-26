@@ -96,9 +96,14 @@ export default function Register() {
     };
 
     const handleAuthMessage = (event) => {
-      // Only accept messages from our API server origin
       const apiOrigin = (import.meta.env.VITE_API_BASE_URL || 'http://localhost:5005/api').replace(/\/api\/?$/, '');
-      if (event.origin !== apiOrigin) return;
+      const isAllowedOrigin =
+        event.origin === apiOrigin ||
+        event.origin === 'http://localhost:5005' ||
+        event.origin === 'http://localhost:5000' ||
+        event.origin.endsWith('.onrender.com');
+
+      if (!isAllowedOrigin) return;
 
       const type = event.data?.type;
       if (!type || typeof type !== 'string' || !type.startsWith('propertyhub-') || !type.endsWith('-auth')) {
