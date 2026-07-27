@@ -130,7 +130,8 @@ export default function Login() {
       setLoading(true);
       // Redirect-based OAuth: navigate directly to backend login URL.
       // Google redirects back to /auth/callback on success.
-      window.location.href = `${apiBaseUrl}/auth/google/login`;
+      const frontendOrigin = window.location.origin;
+      window.location.href = `${apiBaseUrl}/auth/google/login?clientOrigin=${encodeURIComponent(frontendOrigin)}`;
       return;
     }
 
