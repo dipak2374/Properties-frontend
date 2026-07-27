@@ -194,7 +194,7 @@ export default function Register() {
       setLoading(true);
       // Redirect-based OAuth: navigate directly to backend Google auth URL.
       // Backend redirects to /auth/callback with token on success.
-      window.location.href = `${apiBaseUrl}/auth/google/login`;
+      window.location.href = `${apiBaseUrl}/auth/google/login?role=${formData.role}`;
       return;
     }
 
