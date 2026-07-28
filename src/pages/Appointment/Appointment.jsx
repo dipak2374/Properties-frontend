@@ -10,6 +10,20 @@ import { showToast } from '../../utils/featureState';
 
 const getTodayString = () => new Date().toISOString().split('T')[0];
 
+const formatAppointmentDate = (value) => {
+  if (!value) return 'Pending confirmation';
+  const parsed = new Date(value);
+  if (Number.isNaN(parsed.getTime())) return 'Pending confirmation';
+  return parsed.toLocaleDateString('en-US', {
+    weekday: 'short',
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+    hour: 'numeric',
+    minute: '2-digit',
+  });
+};
+
 const timeSlots = ['9:00 AM', '11:00 AM', '1:00 PM', '3:00 PM', '5:00 PM'];
 
 const buildAppointmentDate = (date, slot) => {
