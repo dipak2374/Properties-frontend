@@ -53,3 +53,8 @@ export const createProperty = async (payload) => {
   const response = await api.post('/properties', payload);
   return response.data;
 };
+
+export const deleteProperty = async (id) => {
+  const response = await api.delete(`/properties/${id}`);
+  return response.data;
+};

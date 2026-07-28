@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { motion, useReducedMotion } from 'framer-motion';
 import PropertyCard from '../../components/PropertyCard/PropertyCard';
-import { fetchProperties } from '../../services/propertyService';
+import { deleteProperty, fetchProperties } from '../../services/propertyService';
 import { featuredProperties } from '../../data/featuredProperties';
 import '../../styles/dashboard.css';
 
@@ -13,6 +13,7 @@ export default function MyProperties({ defaultFilter = 'all' }) {
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState(defaultFilter);
   const [searchQuery, setSearchQuery] = useState('');
+  const [deletingId, setDeletingId] = useState(null);
 
   // Update active tab if URL path changes (e.g., /dashboard/drafts vs /dashboard/properties)
   useEffect(() => {
@@ -40,6 +41,20 @@ export default function MyProperties({ defaultFilter = 'all' }) {
     loadProperties();
     return () => { active = false; };
   }, []);
+
+  const handleDeleteProperty = async (propertyId) => {
+    if (!propertyId || !window.confirm('Delete this property listing?')) return;
+
+    setDeletingId(propertyId);
+    try {
+      await deleteProperty(propertyId);
+      setProperties((current) => current.filter((property) => String(property.id) !== String(propertyId)));
+    } catch {
+      window.alert('Unable to delete this property right now.');
+    } finally {
+      setDeletingId(null);
+    }
+  };
 
   const filteredProperties = properties.filter((p) => {
     const matchesSearch = p.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -120,7 +135,17 @@ export default function MyProperties({ defaultFilter = 'all' }) {
           transition={{ duration: 0.4 }}
         >
           {filteredProperties.map((property) => (
-            <PropertyCard key={property.id} {...property} />
+            <div key={property.id} style={{ position: 'relative' }}>
+              <PropertyCard {...property} />
+              <button
+                type="button"
+                onClick={() => handleDeleteProperty(property.id)}
+                disabled={deletingId === property.id}
+                style={{ position: 'absolute', top: '0.75rem', right: '0.75rem', border: 'none', borderRadius: '999px', padding: '0.5rem 0.75rem', background: '#dc2626', color: '#fff', cursor: 'pointer', zIndex: 2 }}
+              >
+                {deletingId === property.id ? 'Deleting...' : 'Delete'}
+              </button>
+            </div>
           ))}
         </motion.div>
       ) : (

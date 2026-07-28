@@ -1,1 +1,0 @@
-import{N as s}from"./index-Dgv9V_RQ.js";const o=async()=>(await s.get("/appointments")).data,p=async t=>(await s.post("/appointments",t)).data,r=async(t,n)=>(await s.patch(`/appointments/${t}/status`,{status:n})).data;export{p as b,o as f,r as u};
