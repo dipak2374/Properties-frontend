@@ -138,17 +138,40 @@ export default function AddProperty() {
     });
   };
 
-  const handleImageUpload = () => {
-    const mockImages = [
-      'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=600&q=80',
-      'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=600&q=80',
-      'https://images.unsplash.com/photo-1600566753376-12c8ab7fb75b?auto=format&fit=crop&w=600&q=80',
-    ];
-    setFormData((prev) => ({
-      ...prev,
-      images: [...prev.images, mockImages[prev.images.length % mockImages.length]],
-    }));
-    showToast('Mock image added to listing.', 'success');
+  const handleImageUpload = async () => {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'image/*';
+    input.multiple = true;
+    input.onchange = async () => {
+      const files = Array.from(input.files || []);
+      if (!files.length) return;
+
+      for (const file of files) {
+        try {
+          const form = new FormData();
+          form.append('image', file);
+
+          const response = await fetch(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5005/api'}/uploads/property-image`, {
+            method: 'POST',
+            body: form,
+          });
+
+          if (!response.ok) {
+            showToast('Upload failed for ' + file.name, 'error');
+            continue;
+          }
+
+          const data = await response.json();
+          setFormData((prev) => ({ ...prev, images: [...prev.images, data.url] }));
+          showToast(file.name + ' uploaded.', 'success');
+        } catch (err) {
+          showToast('Upload error: ' + String(err), 'error');
+        }
+      }
+    };
+
+    input.click();
   };
 
   const removeImage = (index) => {
