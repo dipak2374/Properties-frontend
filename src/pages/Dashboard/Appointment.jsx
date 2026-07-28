@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
-import { fetchAppointments } from '../../services/appointmentService';
+import { fetchAppointments, updateAppointmentStatus } from '../../services/appointmentService';
 
 const getAppointmentUserId = (appointment) => (
   appointment?.user?._id || appointment?.user?.id || appointment?.user || ''
@@ -11,9 +11,23 @@ const getAppointmentPropertyName = (appointment) => (
   appointment?.property?.title || appointment?.property?.name || appointment?.propertyName || `Property ${appointment?.property || ''}`.trim()
 );
 
-const getAppointmentLocation = (appointment) => (
-  appointment?.property?.location || appointment?.location || appointment?.property?.city || ''
-);
+const getAppointmentLocation = (appointment) => {
+  const location = appointment?.property?.location || appointment?.location || appointment?.property?.city || '';
+
+  if (!location) return '';
+
+  if (typeof location === 'string') return location;
+
+  if (typeof location === 'object') {
+    const parts = [location.address, location.city, location.state, location.zipCode, location.country]
+      .filter(Boolean)
+      .map((part) => String(part));
+
+    return parts.join(', ');
+  }
+
+  return String(location);
+};
 
 const getAppointmentAgent = (appointment) => {
   const owner = appointment?.property?.owner;
@@ -24,6 +38,10 @@ const getAppointmentAgent = (appointment) => {
     phone: agent?.phone || owner?.phone || 'Phone pending',
   };
 };
+
+const getAppointmentOwnerId = (appointment) => (
+  appointment?.property?.owner?._id || appointment?.property?.owner?.id || appointment?.property?.owner || ''
+);
 
 const formatAppointmentDate = (value) => {
   if (!value) return 'Date pending';
@@ -46,16 +64,23 @@ export default function DashboardAppointment() {
   const { user } = useSelector((state) => state.auth || {});
   const [appointments, setAppointments] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [updatingId, setUpdatingId] = useState(null);
 
   const userId = user?.id || user?._id;
   const userAppointments = useMemo(() => {
     if (!userId) return [];
-    return appointments.filter((appointment) => String(getAppointmentUserId(appointment)) === String(userId));
+
+    return appointments.filter((appointment) => {
+      const matchesUser = String(getAppointmentUserId(appointment)) === String(userId);
+      const matchesOwner = String(getAppointmentOwnerId(appointment)) === String(userId);
+      return matchesUser || matchesOwner;
+    });
   }, [appointments, userId]);
 
-  useEffect(() => {
+  const refreshAppointments = () => {
     let active = true;
 
+    setLoading(true);
     fetchAppointments()
       .then((data) => {
         if (!active) return;
@@ -72,7 +97,31 @@ export default function DashboardAppointment() {
     return () => {
       active = false;
     };
+  };
+
+  useEffect(() => {
+    return refreshAppointments();
   }, []);
+
+  const handleStatusChange = async (appointmentId, nextStatus) => {
+    if (!appointmentId || !nextStatus) return;
+
+    setUpdatingId(appointmentId);
+    try {
+      const response = await updateAppointmentStatus(appointmentId, nextStatus);
+      const updatedAppointment = response?.appointment;
+      if (updatedAppointment) {
+        setAppointments((current) => current.map((appointment) => {
+          const currentId = appointment._id || appointment.id;
+          return String(currentId) === String(appointmentId) ? { ...appointment, status: updatedAppointment.status } : appointment;
+        }));
+      }
+    } catch (error) {
+      // Ignore and keep the UI stable.
+    } finally {
+      setUpdatingId(null);
+    }
+  };
 
   return (
     <div className="page-shell">
@@ -108,9 +157,22 @@ export default function DashboardAppointment() {
                         {location && <p style={{ margin: '0.35rem 0 0', color: '#64748b' }}>{location}</p>}
                         <p style={{ margin: '0.35rem 0 0', color: '#64748b' }}>{formatAppointmentDate(appointment.date)}</p>
                       </div>
-                      <span style={{ alignSelf: 'center', padding: '0.5rem 0.85rem', borderRadius: '999px', backgroundColor: '#eff6ff', color: '#1d4ed8', fontWeight: 700 }}>
-                        {appointment.status || 'Pending'}
-                      </span>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                        <select
+                          value={appointment.status || 'Pending'}
+                          onChange={(event) => handleStatusChange(appointmentId, event.target.value)}
+                          disabled={updatingId === appointmentId}
+                          style={{ padding: '0.55rem 0.8rem', borderRadius: '999px', border: '1px solid #cbd5e1', background: '#f8fafc', color: '#0f172a', fontWeight: 600 }}
+                        >
+                          <option value="Pending">Pending</option>
+                          <option value="Confirmed">Confirmed</option>
+                          <option value="Cancelled">Cancelled</option>
+                          <option value="Completed">Completed</option>
+                        </select>
+                        <span style={{ padding: '0.5rem 0.85rem', borderRadius: '999px', backgroundColor: '#eff6ff', color: '#1d4ed8', fontWeight: 700 }}>
+                          {appointment.status || 'Pending'}
+                        </span>
+                      </div>
                     </div>
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginTop: '1.25rem' }}>
                       <div>
