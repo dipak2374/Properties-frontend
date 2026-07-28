@@ -1,20 +1,5 @@
 export const featuredProperties = [
   {
-    id: 1,
-    tag: 'For Sale',
-    title: 'Modern Family Apartment',
-    location: 'New York, USA',
-    price: '$1,20,000',
-    beds: 3,
-    baths: 2,
-    area: '1200 Sq Ft',
-    agent: 'Michael Smith',
-    rating: 4.5,
-    type: 'Apartment',
-    image: 'https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=1200&q=80',
-    description: 'A beautifully designed apartment in the heart of the city, offering modern finishes and easy access to local amenities.',
-  },
-  {
     id: 2,
     tag: 'For Rent',
     title: 'Luxury Villa in California',
